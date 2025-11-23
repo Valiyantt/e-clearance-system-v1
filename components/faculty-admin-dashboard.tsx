@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { FacultySignatureModal } from "@/components/faculty-signature-modal"
+import { BlueinkSignatureModal } from "@/components/blueink-signature-modal"
 import {
+  Mail,
   Search,
   Filter,
   Download,
@@ -53,12 +55,13 @@ export function FacultyAdminDashboard() {
   const [departmentFilter, setDepartmentFilter] = useState("all")
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [showSignatureModal, setShowSignatureModal] = useState(false)
+  const [showBlueinkModal, setShowBlueinkModal] = useState(false)
+  const [useBlueink, setUseBlueink] = useState(false)
   const [selectedClearanceItem, setSelectedClearanceItem] = useState<{
     student: Student
     item: ClearanceItem
   } | null>(null)
 
-  // Mock current user department - in real app, this would come from auth
   const currentUserDepartment = "Business Services Officer"
   const currentUserName = "Ms. Maria Santos"
 
@@ -228,22 +231,25 @@ export function FacultyAdminDashboard() {
     }
   }
 
-  const handleSignClearance = (student: Student, item: ClearanceItem) => {
+  const handleSignClearance = (student: Student, item: ClearanceItem, useBlueinkSigning = false) => {
     setSelectedClearanceItem({ student, item })
-    setShowSignatureModal(true)
+    setUseBlueink(useBlueinkSigning)
+    if (useBlueinkSigning) {
+      setShowBlueinkModal(true)
+    } else {
+      setShowSignatureModal(true)
+    }
   }
 
   const handleSignatureComplete = (signatureData: any) => {
     if (selectedClearanceItem) {
-      // Update the clearance item with signature
       console.log("Signature completed:", signatureData)
-      // In real app, this would update the database
       setShowSignatureModal(false)
+      setShowBlueinkModal(false)
       setSelectedClearanceItem(null)
     }
   }
 
-  // Filter students based on current user's department
   const myDepartmentStudents = mockStudents.filter((student) =>
     student.clearanceItems.some((item) => item.department === currentUserDepartment),
   )
@@ -295,7 +301,7 @@ export function FacultyAdminDashboard() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
           You are viewing clearance requests for <strong>{currentUserDepartment}</strong>. You can only approve or
-          reject clearances for your department.
+          reject clearances for your department. You can now use BlueInk for secure e-signatures.
         </AlertDescription>
       </Alert>
 
@@ -447,14 +453,25 @@ export function FacultyAdminDashboard() {
                           View
                         </Button>
                         {myItem && myItem.status === "pending" && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleSignClearance(student, myItem)}
-                            className="flex items-center gap-1"
-                          >
-                            <PenTool className="h-3 w-3" />
-                            Sign
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              onClick={() => handleSignClearance(student, myItem, true)}
+                              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700"
+                            >
+                              <Mail className="h-3 w-3" />
+                              BlueInk
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleSignClearance(student, myItem, false)}
+                              className="flex items-center gap-1"
+                            >
+                              <PenTool className="h-3 w-3" />
+                              Manual
+                            </Button>
+                          </div>
                         )}
                         {myItem && myItem.status === "approved" && (
                           <Button variant="outline" size="sm" disabled>
@@ -474,7 +491,7 @@ export function FacultyAdminDashboard() {
 
       {/* Faculty Signature Modal */}
       <FacultySignatureModal
-        isOpen={showSignatureModal}
+        isOpen={showSignatureModal && !useBlueink}
         onClose={() => {
           setShowSignatureModal(false)
           setSelectedClearanceItem(null)
@@ -485,6 +502,30 @@ export function FacultyAdminDashboard() {
         facultyName={currentUserName}
         department={currentUserDepartment}
       />
+
+      {/* BlueInk Signature Modal */}
+      {selectedClearanceItem && (
+        <BlueinkSignatureModal
+          isOpen={showBlueinkModal && useBlueink}
+          onClose={() => {
+            setShowBlueinkModal(false)
+            setSelectedClearanceItem(null)
+          }}
+          onSignatureComplete={handleSignatureComplete}
+          student={{
+            id: selectedClearanceItem.student.id,
+            fullName: selectedClearanceItem.student.fullName,
+            email: selectedClearanceItem.student.email,
+            studentId: selectedClearanceItem.student.studentId,
+          }}
+          faculty={{
+            name: currentUserName,
+            email: "faculty@smcl.edu.ph", // Should come from auth in real app
+            department: currentUserDepartment,
+          }}
+          documentUrl={`${process.env.NEXT_PUBLIC_BASE_URL}/clearance/${selectedClearanceItem.student.uniqueToken}`}
+        />
+      )}
     </div>
   )
 }
