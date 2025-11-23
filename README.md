@@ -70,7 +70,7 @@ Frontend (Next.js + React)
 
 ## 📦 Installation & Setup
 ---
-```bash
+\`\`\`bash
 # 1️⃣ Clone the repository
 git clone https://github.com/<your-username>/e-clearance-system.git
 cd e-clearance-system
@@ -86,7 +86,7 @@ npm run dev
 
 # 5️⃣ Open in browser
 http://localhost:3000
-```
+\`\`\`
 
 | Variable                 | Description                       |
 | ------------------------ | --------------------------------- |
