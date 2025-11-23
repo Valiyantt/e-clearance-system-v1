@@ -54,18 +54,18 @@ All actions are logged for transparency and accountability.
 
 ## 🧠 System Architecture
 
-Frontend (Next.js + React)  
-│  
-├── Authentication & Routing  
-│  
-├── API Endpoints (/app/api  
-│ ├── Clearance  
-│ ├── Faculty Signatures  
-│ ├── Student Records  
-│ └── System Settings  
-│  
-└── Database Layer (Prisma / Supabase / MongoDB)  
-  
+Frontend (Next.js + React)
+│
+├── Authentication & Routing
+│
+├── API Endpoints (/app/api)
+│ ├── Clearance
+│ ├── Faculty Signatures
+│ ├── Student Records
+│ └── System Settings
+│
+└── Database Layer (Prisma / Supabase / MongoDB)
+
 
 
 ## 📦 Installation & Setup
