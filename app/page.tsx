@@ -49,6 +49,13 @@ export default function HomePage() {
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium text-foreground">Saint Michael's College of Laguna</p>
               <p className="text-xs text-muted-foreground">Digital Clearance Platform</p>
+              <div className="mt-2">
+                <Link href="/login">
+                  <Button variant="outline" size="sm" className="mr-2 bg-transparent">
+                    Login
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

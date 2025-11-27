@@ -75,7 +75,8 @@
   --sidebar-ring: oklch(0.65 0.15 15);
 }
 
-@theme inline {
+/* Removed 'inline' keyword from @theme - use standard @theme syntax */
+@theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
